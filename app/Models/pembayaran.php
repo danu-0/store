@@ -5,19 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class pembayaran extends Model
+class Pembayaran extends Model
 {
     use HasFactory;
 
-    protected $table = 'pembayaran'; // Nama tabel di database
+    protected $table = 'pembayaran';
+
     protected $fillable = [
+        'product_id',
         'user_id',
-        'total_dibayar',
-        'tanggal_pembayaran',
+        'jumlah_product',
+        'total_pembayaran',
+        'tanggal_pembayaran'
     ];
 
-    public function user(){
-        return $this->belongsTo(User::class,'user_id');
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id');
     }
 
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

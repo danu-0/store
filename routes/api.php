@@ -4,46 +4,73 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\kategoriController;
-use App\Http\Controllers\Api\productController;
+use App\Http\Controllers\Api\KategoriController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\PembayaranController;
 
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
+| Routes for authentication, admin, and customer actions.
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-Route::get('user', [AuthController::class, 'index']);
+// Public Routes
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+Route::get('user', [AuthController::class, 'index']);
 
-Route::group(['middleware' => 'auth:api'], function () {
-    Route::get('me',                [AuthController::class, 'me']);
-    Route::get('refresh',           [AuthController::class, 'refresh']);
-    Route::get('logout',            [AuthController::class, 'logout']);
+// Protected Routes (Authenticated Users)
+Route::middleware('auth:api')->group(function () {
 
-    Route::prefix('kategoris')->group(function () {
-        Route::get('', [kategoriController::class, 'index']);
-        Route::get('/{id}', [kategoriController::class, 'indexById']);
-        Route::post('', [kategoriController::class, 'create']);
-        Route::put('/{id}', [kategoriController::class, 'update']);
-        Route::delete('/{id}', [kategoriController::class, 'delete']);
+    // Authenticated User Routes
+    Route::get('me', [AuthController::class, 'me']);
+    Route::get('refresh', [AuthController::class, 'refresh']);
+    Route::get('logout', [AuthController::class, 'logout']);
+
+    // ROUTE ADMIN
+    Route::middleware('role:admin')->prefix('admin')->group(function () {
+        // KategoriS
+        Route::prefix('kategoris')->group(function () {
+            Route::get('', [KategoriController::class, 'index']);
+            Route::get('{id}', [KategoriController::class, 'indexById']);
+            Route::post('', [KategoriController::class, 'create']);
+            Route::put('{id}', [KategoriController::class, 'update']);
+            Route::delete('{id}', [KategoriController::class, 'delete']);
+        });
+
+        // Product
+        Route::prefix('product')->group(function () {
+            Route::get('', [ProductController::class, 'index']);
+            Route::get('{id}', [ProductController::class, 'indexById']);
+            Route::post('', [ProductController::class, 'create']);
+            Route::put('{id}', [ProductController::class, 'update']);
+            Route::delete('{id}', [ProductController::class, 'delete']);
+        });
+
+        // Pembayaran
+        Route::get('pembayaran', [PembayaranController::class, 'index']);
+        Route::delete('pembayaran/{id}', [PembayaranController::class, 'delete']);
     });
 
-    Route::prefix('product')->group(function () {
-        Route::get('', [productController::class, 'index']);
-        Route::get('/{id}', [productController::class, 'indexById']);
-        Route::post('', [productController::class, 'create']);
-        Route::put('/{id}', [productController::class, 'update']);
-        Route::delete('/{id}', [productController::class, 'delete']);
+    // ROUTE CUSTOMER
+    Route::middleware('role:customer')->prefix('customer')->group(function () {
+        // Categories
+        Route::prefix('kategoris')->group(function () {
+            Route::get('', [KategoriController::class, 'index']);
+            Route::get('{id}', [KategoriController::class, 'indexById']);
+        });
+
+        // Products
+        Route::prefix('product')->group(function () {
+            Route::get('', [ProductController::class, 'index']);
+            Route::get('{id}', [ProductController::class, 'indexById']);
+        });
+
+        // Pembayaran
+        Route::get('pembayaran', [PembayaranController::class, 'indexByUser']);
+        Route::post('pembayaran', [PembayaranController::class, 'create']);
     });
 });

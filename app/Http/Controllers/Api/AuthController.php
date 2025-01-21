@@ -78,6 +78,7 @@ class AuthController extends Controller
                     'name' => 'required|string|max:255',
                     'email' => 'required|email|unique:users,email',
                     'password' => 'required|min:6',
+                    'role' => 'required|in:admin,customer',
                 ],
                 [
                     'name.required' => 'Name is required',
@@ -86,6 +87,8 @@ class AuthController extends Controller
                     'email.unique' => 'Email is already in use',
                     'password.required' => 'Password is required',
                     'password.min' => 'Password must be at least :min characters',
+                    'role.required' => 'Role is required',
+                    'role.in' => 'Role must be either admin or customer',
                 ]
             );
 
@@ -98,6 +101,7 @@ class AuthController extends Controller
                 'name' => $params['name'],
                 'email' => $params['email'],
                 'password' => Hash::make($params['password']),
+                'role' => $params['role'],
             ]);
 
             // Respond with success
@@ -119,6 +123,7 @@ class AuthController extends Controller
 
             $data['name'] = $user['name'];
             $data['email'] = $user['email'];
+            $data['role'] = $user['role'];
             $data['exp'] = $expiration_time;
 
             return response()->json(ApiFormatter::createJson(200, 'Logged in User', $data), 200);
