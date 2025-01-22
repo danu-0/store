@@ -35,24 +35,26 @@ Route::middleware('auth:api')->group(function () {
         // KategoriS
         Route::prefix('kategoris')->group(function () {
             Route::get('', [KategoriController::class, 'index']);
-            Route::get('{id}', [KategoriController::class, 'indexById']);
+            Route::get('/{id}', [KategoriController::class, 'indexById']);
             Route::post('', [KategoriController::class, 'create']);
-            Route::put('{id}', [KategoriController::class, 'update']);
-            Route::delete('{id}', [KategoriController::class, 'delete']);
+            Route::put('/{id}', [KategoriController::class, 'update']);
+            Route::delete('/{id}', [KategoriController::class, 'delete']);
         });
 
         // Product
         Route::prefix('product')->group(function () {
             Route::get('', [ProductController::class, 'index']);
-            Route::get('{id}', [ProductController::class, 'indexById']);
+            Route::get('/{id}', [ProductController::class, 'indexById']);
             Route::post('', [ProductController::class, 'create']);
-            Route::put('{id}', [ProductController::class, 'update']);
-            Route::delete('{id}', [ProductController::class, 'delete']);
+            Route::put('/{id}', [ProductController::class, 'update']);
+            Route::delete('/{id}', [ProductController::class, 'delete']);
         });
 
         // Pembayaran
-        Route::get('pembayaran', [PembayaranController::class, 'index']);
-        Route::delete('pembayaran/{id}', [PembayaranController::class, 'delete']);
+        Route::prefix('pembayaran')->group(function () {
+            Route::get('', [PembayaranController::class, 'index']);
+            Route::delete('/{id}', [PembayaranController::class, 'delete']);
+        });
     });
 
     // ROUTE CUSTOMER
@@ -60,17 +62,20 @@ Route::middleware('auth:api')->group(function () {
         // Categories
         Route::prefix('kategoris')->group(function () {
             Route::get('', [KategoriController::class, 'index']);
-            Route::get('{id}', [KategoriController::class, 'indexById']);
+            Route::get('/{id}', [KategoriController::class, 'indexById']);
         });
 
         // Products
         Route::prefix('product')->group(function () {
             Route::get('', [ProductController::class, 'index']);
-            Route::get('{id}', [ProductController::class, 'indexById']);
+            Route::get('/{id}', [ProductController::class, 'indexById']);
         });
 
         // Pembayaran
-        Route::get('pembayaran', [PembayaranController::class, 'indexByUser']);
-        Route::post('pembayaran', [PembayaranController::class, 'create']);
+        //
+        Route::prefix('pembayaran')->group(function () {
+            Route::get('', [PembayaranController::class, 'indexByUser']);
+            Route::post('', [PembayaranController::class, 'create']);
+        });
     });
 });
